@@ -1,0 +1,16 @@
+# State files (persisted via GitHub Actions cache)
+seen_offers.json
+pending_messages.json
+session.json
+daily_results.json
+
+# Logs
+bot.log
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
