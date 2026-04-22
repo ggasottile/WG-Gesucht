@@ -1,0 +1,45 @@
+name: Daily Email Recap
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  recap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Restore state files
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            seen_offers.json
+            pending_messages.json
+            session.json
+            daily_results.json
+          key: wg-bot-state
+
+      - name: Send daily recap email
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python send_recap.py
+
+      - name: Save state files
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            seen_offers.json
+            pending_messages.json
+            session.json
+            daily_results.json
+          key: wg-bot-state-${{ github.run_id }}
